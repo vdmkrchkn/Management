@@ -40,9 +40,10 @@ void MainWindow::timerEvent(QTimerEvent *pEvent)
         srand((unsigned)time(NULL));
         int n = rand() % m_nWorkers;
         if(m_lWorkers[n]->isRunning()) {
-            ui->statusBar->setToolTip(
-                        "Restarting " + QString::number(n) + " worker");
             m_lWorkers[n]->stop();
+            ui->statusBar->showMessage(
+                        "Restarting " + QString::number(n) + " worker", 5000);
+            QThread::sleep(5);
             m_lWorkers[n]->start();
         }
     }
