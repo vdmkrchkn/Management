@@ -12,7 +12,7 @@ void Worker::run()
 {
     while(!m_vbStopped) {
         std::cout << m_chData << std::endl;
-        QThread::sleep(5);
+        QThread::sleep(2);
     }
     m_vbStopped = false;    
 }
