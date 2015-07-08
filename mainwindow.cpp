@@ -5,14 +5,13 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    m_nWorkers(2),
-    m_nTimerId(0)
+    m_nWorkers(2), m_nTimerId(0), m_bStopped(true)
 {
     ui->setupUi(this);
     //
     m_nWorkers = std::min(m_nWorkers,10);
     for(int i = 0; i < m_nWorkers; ++i)
-        m_lWorkers << new Worker(i + '0');
+        m_lWorkers << new Worker(i);
 }
 
 MainWindow::~MainWindow()
@@ -36,7 +35,7 @@ void MainWindow::hideEvent(QHideEvent *pEvent)
 
 void MainWindow::timerEvent(QTimerEvent *pEvent)
 {
-    if(pEvent->timerId() == m_nTimerId) {
+    if(pEvent->timerId() == m_nTimerId && !m_bStopped) {
         srand((unsigned)time(NULL));
         int n = rand() % m_nWorkers;
         if(m_lWorkers[n]->isRunning()) {
@@ -53,17 +52,16 @@ void MainWindow::timerEvent(QTimerEvent *pEvent)
 
 void MainWindow::on_action_Start_triggered()
 {
-    foreach (Worker* wThread, m_lWorkers) {
-        if(wThread->isRunning()) {
-            wThread->stop();
-        }
-        else {
+    if(m_bStopped) {
+        foreach (Worker* wThread, m_lWorkers)
             wThread->start();
-        }
-    }
-    //
-    if(ui->action_Start->text() == QString("&Start"))
+        m_bStopped = false;
         ui->action_Start->setText("&Stop");
-    else
+    }
+    else {
+        foreach (Worker* wThread, m_lWorkers)
+            wThread->stop();
+        m_bStopped = true;
         ui->action_Start->setText("&Start");
+    }
 }

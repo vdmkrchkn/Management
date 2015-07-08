@@ -27,6 +27,7 @@ private:
     int m_nWorkers;
     QList<Worker*> m_lWorkers;
     int m_nTimerId;
+    bool m_bStopped;
 };
 
 #endif // MAINWINDOW_H
