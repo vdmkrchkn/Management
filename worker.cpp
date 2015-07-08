@@ -1,18 +1,20 @@
 #include "worker.h"
 #include <iostream>
 
-Worker::Worker(char chData) : QThread(0), m_vbStopped(false), m_chData(chData){}
+Worker::Worker(int id) : QThread(0), m_vbStopped(false), m_nId(id){}
 
 void Worker::stop()
 {
+    QMutexLocker lock(&m_Mutex);
     m_vbStopped = true;
 }
 
 void Worker::run()
 {
-    while(!m_vbStopped) {
-        std::cout << m_chData << std::endl;
+    while(!m_vbStopped) {        
+        std::cerr << m_nId << std::endl;
         QThread::sleep(2);
-    }
-    m_vbStopped = false;    
+    }    
+    QMutexLocker lock(&m_Mutex);
+    m_vbStopped = false;
 }
